@@ -1,12 +1,21 @@
 package model;
 
 public class User {
+    private String id_str;
     private String name;
     private String screen_name;
     private String profile_image_url;
     private int followers_count;
 
     public User() {
+    }
+
+    public String getId_str() {
+        return id_str;
+    }
+
+    public void setId_str(String id_str) {
+        this.id_str = id_str;
     }
 
     public String getName() {
@@ -44,7 +53,8 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "name='" + name + '\'' +
+                "id_str='" + id_str + '\'' +
+                ", name='" + name + '\'' +
                 ", screen_name='" + screen_name + '\'' +
                 ", profile_image_url='" + profile_image_url + '\'' +
                 ", followers_count=" + followers_count +

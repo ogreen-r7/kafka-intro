@@ -68,7 +68,7 @@ public class MainConsumer {
 
         Gson gson = new Gson();
 
-        for (int msgRead = 0; msgRead < 10; msgRead++) {
+        for (int msgRead = 0; msgRead < 500; msgRead++) {
             String msg = null;
             try {
                 msg = queue.take();

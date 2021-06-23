@@ -2,6 +2,7 @@ package model;
 
 public class Tweet {
 
+    private String id_str;
     private String text;
     private Extended_Tweet extended_tweet;
     private User user;
@@ -10,6 +11,14 @@ public class Tweet {
     private int retweetCount;
 
     public Tweet() {
+    }
+
+    public String getId_str() {
+        return id_str;
+    }
+
+    public void setId_str(String id_str) {
+        this.id_str = id_str;
     }
 
     public String getText() {
@@ -63,7 +72,8 @@ public class Tweet {
     @Override
     public String toString() {
         return "Tweet{" +
-                "text='" + text + '\'' +
+                "id_str='" + id_str + '\'' +
+                ", text='" + text + '\'' +
                 ", extended_tweet=" + extended_tweet +
                 ", user=" + user +
                 ", lang='" + lang + '\'' +

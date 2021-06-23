@@ -34,7 +34,6 @@ public class MyElasticSearch {
     }
 
     public void insertSingleDocument(String tweet) throws IOException {
-        JsonObject jsonObject = new JsonParser().parse(tweet).getAsJsonObject();
         IndexRequest request = new IndexRequest(INDEX);
         request.source(tweet, XContentType.JSON);
 
