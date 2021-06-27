@@ -6,6 +6,8 @@ public class Tweet {
     private String text;
     private Extended_Tweet extended_tweet;
     private User user;
+    private String geo;
+    private Place place;
     private String lang;
     private int favouriteCount;
     private int retweetCount;
@@ -43,6 +45,22 @@ public class Tweet {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getGeo() {
+        return geo;
+    }
+
+    public void setGeo(String geo) {
+        this.geo = geo;
+    }
+
+    public Place getPlace() {
+        return place;
+    }
+
+    public void setPlace(Place place) {
+        this.place = place;
     }
 
     public String getLang() {

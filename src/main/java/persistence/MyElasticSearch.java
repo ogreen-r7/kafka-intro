@@ -14,13 +14,11 @@ import java.io.IOException;
 
 public class MyElasticSearch {
 
-    private static String HOST = "localhost";
+    private static String HOST = "0.0.0.0";
     private static Integer PORT = 9200;
     private static String SCHEME = "http";
     private static String INDEX = "tweets";
-
-    //id for our document
-    public String id = "";
+    private static String TYPE = "_doc";
 
     //RestHighLevelClient Object
     private static RestHighLevelClient restHighLevelClient;
@@ -29,18 +27,18 @@ public class MyElasticSearch {
         MyElasticSearch es = new MyElasticSearch();
         es.makeConnection();
         String person = "{\"age\":10,\"dateOfBirth\":1471466076564,\"fullName\":\"John Doe\"}";
-        es.insertSingleDocument(person);
+        es.insertSingleDocument(person, "1");
         es.closeConnection();
     }
 
-    public void insertSingleDocument(String tweet) throws IOException {
-        IndexRequest request = new IndexRequest(INDEX);
+    public void insertSingleDocument(String tweet, String tweetId) throws IOException {
+        IndexRequest request = new IndexRequest(INDEX, TYPE, tweetId);
         request.source(tweet, XContentType.JSON);
 
         IndexResponse response = restHighLevelClient.index(request, RequestOptions.DEFAULT);
         String index = response.getIndex();
-        long version = response.getVersion();
-        System.out.println("es index: " + index);
+        String responseId = response.getId();
+        System.out.println("es index: " + index + " id: " + responseId);
     }
 
     public synchronized RestHighLevelClient makeConnection() {

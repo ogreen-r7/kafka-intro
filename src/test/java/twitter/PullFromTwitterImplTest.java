@@ -33,7 +33,7 @@ public class PullFromTwitterImplTest {
 
     @Test
     public void twitterSimpleTest() {
-        for (int msgRead = 0; msgRead < 20; msgRead++) {
+        for (int msgRead = 0; msgRead < 100; msgRead++) {
             String msg = null;
             try {
                 msg = queue.take();
@@ -41,18 +41,19 @@ public class PullFromTwitterImplTest {
                 e.printStackTrace();
             }
 
-//            System.out.println(msg);
             Tweet tweet = JsonParse.parseStringToTweet(msg);
-//            System.out.println("Text: " + tweet.getText());
-            if (!tweet.getText().startsWith("RT")) {
+            System.out.println("@@@ raw tweet: " + msg);
+            System.out.println("@@ Place: " + tweet.getGeo() + " - " + tweet.getPlace());
+
+//            if (!tweet.getText().startsWith("RT")) {
 //                System.out.println(tweet);
-                String extendedText = tweet.getText();
-                if (tweet.getExtended_tweet() != null) {
-                    extendedText = tweet.getExtended_tweet().getFull_text();
-                }
-                System.out.println("UserId: " + tweet.getUser().getId_str() + " id: "+ tweet.getId_str() + " text: " + extendedText);
+//                String extendedText = tweet.getText();
+//                if (tweet.getExtended_tweet() != null) {
+//                    extendedText = tweet.getExtended_tweet().getFull_text();
+//                }
+//                System.out.println("UserId: " + tweet.getUser().getId_str() + " id: "+ tweet.getId_str() + " text: " + extendedText);
 //                System.out.println("--------");
-            }
+//            }
         }
         twitterClient.stop();
         queue.clear();

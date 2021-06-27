@@ -25,13 +25,13 @@ public class MainConsumer {
 
     private Logger LOGGER = LoggerFactory.getLogger(MainConsumer.class);
     private static final String KAFKA_SERVER = "localhost:9092";
-    private static final String KAFKA_TOPIC = "twitter-2";
+    private static final String KAFKA_TOPIC = "twitter-3";
     private static final String CONSUMER_GROUP = "twitter-1";
 
     public static void main(String[] args) throws IOException {
         MainConsumer mainConsumer = new MainConsumer();
-        mainConsumer.runConsumer();
-//        mainConsumer.testTweetsToElastic();
+//        mainConsumer.runConsumer();
+        mainConsumer.testTweetsToElastic();
     }
 
     public void runConsumer() throws IOException {
@@ -50,7 +50,8 @@ public class MainConsumer {
                 LOGGER.info("Key: " + rec.key() + " -- Partition: " + rec.partition() + " Offset: " + rec.offset());
                 Tweet tweet = JsonParse.parseStringToTweet(rec.value());
                 LOGGER.info("tweet from: " + tweet.getUser().getScreen_name());
-                myElasticSearch.insertSingleDocument(gson.toJson(tweet));
+
+                myElasticSearch.insertSingleDocument(gson.toJson(tweet), tweet.getId_str());
             }
         }
     }
@@ -58,7 +59,7 @@ public class MainConsumer {
     private void testTweetsToElastic() throws IOException {
         BlockingQueue<String> queue = new LinkedBlockingQueue<>(10000);
         List<String> searchTermList = new ArrayList<>();
-        searchTermList.add("peace");
+        searchTermList.add("israel");
 
         PullFromTwitter pullFromTwitter = new PullFromTwitterImpl(queue, searchTermList);
         Client twitterClient = pullFromTwitter.clientInit();
@@ -68,7 +69,7 @@ public class MainConsumer {
 
         Gson gson = new Gson();
 
-        for (int msgRead = 0; msgRead < 500; msgRead++) {
+        for (int msgRead = 0; msgRead < 50; msgRead++) {
             String msg = null;
             try {
                 msg = queue.take();
@@ -78,8 +79,7 @@ public class MainConsumer {
 
             Tweet tweet = JsonParse.parseStringToTweet(msg);
             LOGGER.info(String.valueOf(tweet));
-            myElasticSearch.insertSingleDocument(gson.toJson(tweet));
-
+            myElasticSearch.insertSingleDocument(gson.toJson(tweet), tweet.getId_str());
         }
         twitterClient.stop();
         queue.clear();

@@ -19,9 +19,9 @@ public class MainProducer {
 
     private Logger LOGGER = LoggerFactory.getLogger(MainProducer.class);
     private static final String KAFKA_SERVER = "localhost:9092";
-    private static final String KAFKA_TOPIC = "twitter-2";
+    private static final String KAFKA_TOPIC = "twitter-3";
     private static final String SEARCH_TERM = "israel";
-    private final long TWEETER_PULL_LIMIT = 100L;
+    private final long TWEETER_PULL_LIMIT = 10000L;
 
     public static void main(String[] args) {
         MainProducer mainProducer = new MainProducer();
@@ -32,6 +32,9 @@ public class MainProducer {
         BlockingQueue<String> queue = new LinkedBlockingQueue<>(10000);
         List<String> searchTermList = new ArrayList<>();
         searchTermList.add(SEARCH_TERM);
+        searchTermList.add("TDF");
+        searchTermList.add("soccer");
+        searchTermList.add("europe");
 
         PullFromTwitter pullFromTwitter = new PullFromTwitterImpl(queue, searchTermList);
         Client twitterClient = pullFromTwitter.clientInit();
@@ -53,8 +56,13 @@ public class MainProducer {
             twitterKafkaProducer.sendMessage(gson.toJson(tweet));
             LOGGER.info("@@@@ Pulled tweet: " + tweet.getText());
         }
-        twitterClient.stop();
-        queue.clear();
-        twitterKafkaProducer.closeProducer();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            LOGGER.info("Shutting down producer");
+            twitterClient.stop();
+            queue.clear();
+            twitterKafkaProducer.closeProducer();
+            LOGGER.info("Shutdown complete");
+        }));
     }
 }
