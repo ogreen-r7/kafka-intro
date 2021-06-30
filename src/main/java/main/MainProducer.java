@@ -32,9 +32,9 @@ public class MainProducer {
         BlockingQueue<String> queue = new LinkedBlockingQueue<>(10000);
         List<String> searchTermList = new ArrayList<>();
         searchTermList.add(SEARCH_TERM);
-        searchTermList.add("TDF");
-        searchTermList.add("soccer");
-        searchTermList.add("europe");
+//        searchTermList.add("TDF");
+//        searchTermList.add("soccer");
+//        searchTermList.add("europe");
 
         PullFromTwitter pullFromTwitter = new PullFromTwitterImpl(queue, searchTermList);
         Client twitterClient = pullFromTwitter.clientInit();

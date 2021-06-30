@@ -1,7 +1,5 @@
 package persistence;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
@@ -24,11 +22,7 @@ public class MyElasticSearch {
     private static RestHighLevelClient restHighLevelClient;
 
     public static void main(String[] args) throws IOException {
-        MyElasticSearch es = new MyElasticSearch();
-        es.makeConnection();
-        String person = "{\"age\":10,\"dateOfBirth\":1471466076564,\"fullName\":\"John Doe\"}";
-        es.insertSingleDocument(person, "1");
-        es.closeConnection();
+
     }
 
     public void insertSingleDocument(String tweet, String tweetId) throws IOException {
@@ -36,9 +30,7 @@ public class MyElasticSearch {
         request.source(tweet, XContentType.JSON);
 
         IndexResponse response = restHighLevelClient.index(request, RequestOptions.DEFAULT);
-        String index = response.getIndex();
         String responseId = response.getId();
-        System.out.println("es index: " + index + " id: " + responseId);
     }
 
     public synchronized RestHighLevelClient makeConnection() {

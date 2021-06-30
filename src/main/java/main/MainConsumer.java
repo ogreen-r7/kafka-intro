@@ -7,6 +7,13 @@ import model.Tweet;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.xcontent.XContent;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import persistence.MyElasticSearch;
@@ -30,8 +37,8 @@ public class MainConsumer {
 
     public static void main(String[] args) throws IOException {
         MainConsumer mainConsumer = new MainConsumer();
-//        mainConsumer.runConsumer();
-        mainConsumer.testTweetsToElastic();
+        mainConsumer.runConsumer();
+//        mainConsumer.testTweetsToElastic();
     }
 
     public void runConsumer() throws IOException {
@@ -39,19 +46,32 @@ public class MainConsumer {
         KafkaConsumer<String, String> consumer = myConsumer.initConsumer();
 
         MyElasticSearch myElasticSearch = new MyElasticSearch();
-        myElasticSearch.makeConnection();
-
-        Gson gson = new Gson();
+        RestHighLevelClient elasticSearchClient = myElasticSearch.makeConnection();
 
         while (true) {
-            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(200));
+            ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(1000));
 
+            Integer recordsCount = consumerRecords.count();
+            LOGGER.info("@@@ Records received: " + recordsCount);
+            BulkRequest bulkRequest = new BulkRequest();
             for (ConsumerRecord<String, String> rec : consumerRecords) {
                 LOGGER.info("Key: " + rec.key() + " -- Partition: " + rec.partition() + " Offset: " + rec.offset());
                 Tweet tweet = JsonParse.parseStringToTweet(rec.value());
-                LOGGER.info("tweet from: " + tweet.getUser().getScreen_name());
+//                myElasticSearch.insertSingleDocument(gson.toJson(tweet), tweet.getId_str());
+                IndexRequest indexRequest = new IndexRequest("tweets", "_doc", tweet.getId_str()) // makes consumer idempotent
+                        .source(tweet, XContentType.JSON);
+                bulkRequest.add(indexRequest);
+            }
 
-                myElasticSearch.insertSingleDocument(gson.toJson(tweet), tweet.getId_str());
+            if (recordsCount > 0) {
+                BulkResponse bulkResponse = elasticSearchClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+                consumer.commitSync();
+                LOGGER.info("#### Offset commit");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
