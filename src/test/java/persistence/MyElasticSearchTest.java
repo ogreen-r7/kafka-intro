@@ -37,6 +37,24 @@ public class MyElasticSearchTest {
         SearchHit[] hits = response.getHits().getHits();
         Arrays.stream(hits).limit(10).forEach(System.out::println);
     }
+
+    @Test
+    public void createIndexTest() throws IOException {
+        myElasticSearch.createIndex("tweets1");
+    }
+
+    @Test
+    public void insertRecordTest() throws IOException {
+        String index = "stoptest";
+        String doc1 = "{\"id\": \"12\", \"txt\": \"marry had a little lamb who's fleece was white as snow. and everywhere that marry went the lamb was sure to go\"}";
+        String doc2 = "{\"id\": \"13\", \"txt\": \"black lamb of a white lamb\"}";
+        String doc3 = "{\"id\": \"14\", \"txt\": \"RT my dear marry is a black lamb\"}";
+
+        myElasticSearch.insertSingleDocument(index, doc1, "12");
+        myElasticSearch.insertSingleDocument(index, doc2, "13");
+        myElasticSearch.insertSingleDocument(index, doc3, "14");
+    }
 }
 
 // http://localhost:9200/tweets/_search?q=text:startup
+// http://localhost:9200/mytest/_search?q=text:lamb

@@ -80,6 +80,7 @@ public class MainConsumer {
         BlockingQueue<String> queue = new LinkedBlockingQueue<>(10000);
         List<String> searchTermList = new ArrayList<>();
         searchTermList.add("israel");
+        String index = "tweets";
 
         PullFromTwitter pullFromTwitter = new PullFromTwitterImpl(queue, searchTermList);
         Client twitterClient = pullFromTwitter.clientInit();
@@ -99,7 +100,7 @@ public class MainConsumer {
 
             Tweet tweet = JsonParse.parseStringToTweet(msg);
             LOGGER.info(String.valueOf(tweet));
-            myElasticSearch.insertSingleDocument(gson.toJson(tweet), tweet.getId_str());
+            myElasticSearch.insertSingleDocument(index, gson.toJson(tweet), tweet.getId_str());
         }
         twitterClient.stop();
         queue.clear();
